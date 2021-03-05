@@ -1,0 +1,131 @@
+---
+title: "Lab 33"
+author: "Luz Yolanda Rivera"
+date: "3/4/2021"
+output: html_document
+---
+CARACTERISTICAS DE LOS AUTOS
+Base de datos del propio Rstudio que se llama mtcars, para verla ?mtcars
+```{r}
+head(mtcars)
+```
+identificar qué tipos de datos se tienen
+```{r}
+class(mtcars)
+```
+vemos que mtcars es un data.frame, por lo tanto lo convertimos en matriz para poder hacer un mapa de calor
+llamada mtcars_matrix 
+```{r}
+mtcars_matrix <- data.matrix(mtcars)
+```
+verificamos que la conversión a matriz se realizó, preguntando con class, qué tipo de datos son
+```{r}
+class(mtcars_matrix)
+```
+hacer el mapa de calor con la función heatmap
+```{r}
+heatmap(mtcars_matrix)
+```
+¿Se parece a lo que esperabas?
+Mire la página de ayuda de la función y lea la descripción del scale argumento de heatmap
+```{r}
+?heatmap
+```
+La escala es importante: los valores deben centrarse y escalarse en filas o columnas. 
+En nuestro caso, queremos visualizar altibajos en cada variable, que está en columnas.
+```{r}
+heatmap(mtcars_matrix, scale = "colum")
+```
+crear nuestra propia paleta-gama de colores o coloreta, del color más ligero al más intenso
+```{r}
+colores_blue<- colorRampPalette(c ("lightblue", "cornflowerblue", "navyblue" )) (256)
+```
+La misma instrucción ahora le indico que los colores col, serán los de la gama de colores que cree blue 
+vamos como Maserati Bora tiene máyor valor en caballos de fuerza que las otras marcas de coches
+con AMBOS denogramas por default, se ordenan las variables por cluster de pertenencia
+```{r}
+heatmap(mtcars_matrix, 
+        scale = "colum",
+        col= colores_blue)
+```
+Eliminar dendrogramas
+El dendrograma de columna realmente no tiene sentido para este conjunto de datos, es el horizontal
+no nos interesa el dendograma de las características, no interesa el de los tipos de coche Rowv
+y Colvse puede configurar para NAeliminar dendrogramas, lo que también significa que los datos 
+no se reorganizarn de acuerdo con el método de agrupación.
+NOS INTERESA COMO SE CLUSTEAN LOS TIPOS DE COCHE, NO LAS CARACTERÍSTICAS DE LOS COCHES POR QUE LOS DATOS NO ESTAN NORMALIZADOS
+```{r}
+heatmap(mtcars_matrix, 
+        scale = "colum",
+        col= colores_blue,
+        Colv = NA ,
+        margins = c(5 , 10),
+        xlab = "especificación de características",
+        ylab = "modelos de autos",
+        main = "Mapa de Calor")
+```
+puedo checar los nombres de las columnas de mi matriz y veo que no hay cambios.
+se respeta el orden de las columnas, porque se borr? el dendrograma de las columnas, ya no se ordena por cluster
+no se respeta el orden de los renglones, porque estos si tienen clusteo
+```{r}
+colnames(mtcars_matrix)
+```
+#paletas por defecto
+# rainbow, heat.colors, terrain.colors, topo.colors, cm.colors
+#llamamos a librería a viridis
+```{r}
+library(viridis)
+```
+cambiamos de color a "viridis"
+```{r}
+heatmap(mtcars_matrix, 
+        scale = "colum",
+        col= viridis_pal(option = "viridis") (6) ,
+        Colv = NA ,
+        margins = c(5 , 10),
+        xlab = "especificación de características",
+        ylab = "modelos de autos",
+        main = "Mapa de Calor")
+```
+cambiamos ahora a magma
+```{r}
+heatmap(mtcars_matrix, 
+        scale = "colum",
+        col= viridis_pal(option = "magma") (6) ,
+        Colv = NA ,
+        margins = c(5 , 10),
+        xlab = "especificación de características",
+        ylab = "modelos de autos",
+        main = "Mapa de Calor")
+```
+cambiamos los colores a las opciones que tiene sin viridis
+col = viridis_pal(option = "viridis") (6)) viridis, magma, plasma, cividis, inferno
+```{r}
+heatmap(mtcars_matrix, 
+        scale = "colum",
+        col= rainbow (6) ,
+        Colv = NA ,
+        margins = c(5 , 10),
+        xlab = "especificación de características",
+        ylab = "modelos de autos",
+        main = "Mapa de Calor")
+```
+para poder distinguir los valores altos de los valores bajos
+nos damos cuenta que el valor más alto es el rojo y el más alto es el rosa
+```{r}
+image(1:6,1,as.matrix(1:6), col = rainbow (6), xlab="Leyenda", ylab="", xaxt="n", yaxt="n", bty="n")
+```
+llamamos datos a la matriz de mtcars
+```{r}
+datos <- mtcars
+```
+Para que las variables sean comparables bajo un mismo esquema de colores se
+estandarizan
+```{r}
+datos <- scale(datos)
+```
+graficar el denograma llamado modelo
+```{r}
+modelo<- hclust(dist(datos), method = "ward.D2")
+plot(modelo)
+```
